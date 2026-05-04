@@ -35,7 +35,7 @@ This project solves these problems by providing:
 
 ## 🧠 System Workflow
 
-```mermaid
+
 flowchart TD
     A[User Voice Input 🎤] --> B[Speech-to-Text (Whisper)]
     C[User Image 🖼️] --> D[Vision Model]
