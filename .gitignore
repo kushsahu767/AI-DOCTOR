@@ -1,0 +1,12 @@
+.env
+*.mp3
+*.wav
+__pycache__/
+*.pyc
+*.venv
+*.env
+*.venv-1
+*.requirements.txt
+*.gradio
+*.vscode
+
