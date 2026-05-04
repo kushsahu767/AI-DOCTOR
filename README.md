@@ -154,27 +154,7 @@ http://127.0.0.1:7860
 
 ---
 
-## 📸 Demo Screenshots
 
-### 🏠 Home Interface
-
-<p align="center">
-  <img src="assets/home.png" width="700"/>
-</p>
-
-### 🎤 Voice Input
-
-<p align="center">
-  <img src="assets/voice.png" width="700"/>
-</p>
-
-### 🧠 Output Result
-
-<p align="center">
-  <img src="assets/output.png" width="700"/>
-</p>
-
----
 
 ## 📸 Usage
 
@@ -253,6 +233,3 @@ If you like this project:
 
 ---
 
-<p align="center">
-  Made with ❤️ by Kush Sahu
-</p>
