@@ -154,6 +154,28 @@ http://127.0.0.1:7860
 
 ---
 
+## 📸 Demo Screenshots
+
+### 🏠 Home Interface
+
+<p align="center">
+  <img src="assets/home.png" width="700"/>
+</p>
+
+### 🎤 Voice Input
+
+<p align="center">
+  <img src="assets/voice.png" width="700"/>
+</p>
+
+### 🧠 Output Result
+
+<p align="center">
+  <img src="assets/output.png" width="700"/>
+</p>
+
+---
+
 ## 📸 Usage
 
 1. Record your voice describing symptoms
@@ -198,20 +220,26 @@ It does not provide real medical diagnosis. Always consult a certified doctor.
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome:
-
-* Fork the repository
-* Create a new branch
-* Submit a pull request
-
----
-
 ## 👨‍💻 Author
 
 Kush Sahu
 UI/UX Designer | AI Developer
+
+---
+
+## 🏗️ Development Note
+
+This project is independently designed and developed by me, including the system architecture, UI/UX design, and integration of all modules such as voice processing, image analysis, and response generation.
+
+AI technologies like Whisper, LLMs, and Text-to-Speech have been used strictly as functional tools for processing and debugging purposes. The complete logic, design, and implementation of this system are developed by me.
+
+---
+
+## 🤝 Contributing
+
+* Fork the repository
+* Create a new branch
+* Submit a pull request
 
 ---
 
@@ -226,5 +254,5 @@ If you like this project:
 ---
 
 <p align="center">
-  Made with ❤️ using AI
+  Made with ❤️ by Kush Sahu
 </p>
