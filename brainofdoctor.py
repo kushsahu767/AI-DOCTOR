@@ -17,6 +17,7 @@ if not api_key:
     )
 
 client = Groq(api_key=api_key)
+GROQ_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
 
 def encode_image_to_base64(image_path):
     """
@@ -45,7 +46,7 @@ def encode_image_to_base64(image_path):
 image_path = "D:\\local disk c copies\\download\\AI Mediacl Vision Chatbot\\acne.jpg"
 encoded_image = encode_image_to_base64(image_path)
 query = "What skin condition does this patient have?"
-model = "meta-llama/llama-4-scout-17b-16e-instruct"  # Use a vision-capable model
+model = GROQ_MODEL
 
 def create_chat_completion(query, encoded_image, model):
     """
@@ -79,9 +80,17 @@ def create_chat_completion(query, encoded_image, model):
     
     chat_completions = client.chat.completions.create(
         messages=messages,
-        model=model
+        model=model,
+        temperature=0.6,
+        max_completion_tokens=2048,
+        top_p=0.95,
+        reasoning_effort="default",
+        stream=True,
     )
-    return chat_completions
+    return "".join(
+        chunk.choices[0].delta.content or ""
+        for chunk in chat_completions
+    )
 
 # Main execution
 if __name__ == "__main__":

@@ -60,13 +60,15 @@ def texttospeech_elevenlabs(text, output_file):
         audio = client.text_to_speech.convert(
             text=text,
             voice_id=voice_id,
-            model_id="eleven_turbo_v2"
+            model_id="eleven_turbo_v2",
+            optimize_streaming_latency=4,
+            output_format="mp3_44100_128",
         )
         
         with open(output_file, "wb") as f:
             for chunk in audio:
                 f.write(chunk)
-        print(f"✓ ElevenLabs audio saved: {output_file}")
+        print(f"ElevenLabs audio saved: {output_file}")
         return True
         
     except ModuleNotFoundError:
@@ -76,17 +78,17 @@ def texttospeech_elevenlabs(text, output_file):
     except Exception as e:
         error_msg = str(e)
         if "library voices" in error_msg.lower() or "paid_plan" in error_msg.lower():
-            print("\n❌ ERROR: Free tier limitation!")
-            print("\n📝 The voice ID you provided is a LIBRARY voice (pre-made).")
+            print("\nERROR: ElevenLabs free-tier limitation.")
+            print("\nThe voice ID provided is a LIBRARY voice (pre-made).")
             print("   Free tier can ONLY use custom voices you CREATE.")
-            print("\n✅ To fix this:")
+            print("\nTo fix this:")
             print("   1. Go to: https://elevenlabs.io/app/voice-lab")
             print("   2. Click '+ Create a new voice'")
             print("   3. Record yourself speaking (5-30 seconds) - don't clone")
             print("   4. Name it and save")
             print("   5. Copy the NEW voice ID")
             print("   6. Update .env with: ELEVENLABS_VOICE_ID=your_new_custom_voice_id")
-            print("\n📌 ALTERNATIVELY: Just use Google TTS (fully working)")
+            print("\nFallback: Google TTS will be used instead.")
         else:
             print(f"ElevenLabs Error: {e}")
         return False

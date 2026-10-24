@@ -1,0 +1,62 @@
+AI-DOCTOR Project Dependencies
+==============================
+
+Runtime
+-------
+Python >= 3.10
+Recommended: Python 3.12
+
+Python packages
+---------------
+groq>=0.4.1
+python-dotenv>=1.0.0
+speechrecognition>=3.10.0
+pydub>=0.25.1
+PyAudio==0.2.14
+gTTS>=2.4.0
+elevenlabs==2.0.0
+gradio>=4.0.0
+Pillow>=10.0.0
+numpy
+
+System dependencies
+-------------------
+FFmpeg
+PortAudio (required by PyAudio for microphone recording)
+
+Environment variables / API services
+-------------------------------------
+GROQ_API_KEY=<your Groq API key>
+ELEVENLABS_API_KEY=<your ElevenLabs API key>
+ELEVENLABS_VOICE_ID=<your ElevenLabs custom voice ID>
+GROQ_MODEL=qwen/qwen3.8-27b
+
+Notes
+-----
+- Store the environment variables in a local .env file.
+- Never commit .env or real API key values to Git.
+- GROQ_API_KEY is used for vision analysis and Whisper transcription.
+- GROQ_MODEL selects the Groq chat model and defaults to qwen/qwen3.8-27b.
+- ElevenLabs variables are used only for ElevenLabs text-to-speech.
+- The current Gradio application uses gTTS for its default voice response.
+
+Web application services
+------------------------
+Frontend:
+- React
+- Vite
+- TypeScript
+
+Java history service:
+- Java 17+
+- Spring Boot 3
+- Spring Web
+- Spring Data JPA
+- PostgreSQL JDBC driver
+- Spring Validation
+
+Python AI service:
+- FastAPI
+- Uvicorn
+- python-multipart
+- pypdf

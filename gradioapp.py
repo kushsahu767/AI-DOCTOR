@@ -12,11 +12,12 @@ env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path, override=True)
 
 from groq import Groq
-from voiceofdoctor import texttospeech_gtts
+from voiceofdoctor import texttospeech_elevenlabs, texttospeech_gtts
 
 # Initialize API client
 api_key = os.environ.get("GROQ_API_KEY")
 client = Groq(api_key=api_key)
+GROQ_MODEL = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b")
 
 def encode_image_to_base64(image_input):
     """Encode an image file or PIL Image or numpy array to base64 string."""
@@ -36,8 +37,10 @@ def encode_image_to_base64(image_input):
         # If it's a PIL Image, convert to base64
         if isinstance(image_input, Image.Image):
             print("Encoding PIL Image to base64...")
+            image_input = image_input.convert("RGB")
+            image_input.thumbnail((1024, 1024))
             buffered = io.BytesIO()
-            image_input.save(buffered, format="JPEG")
+            image_input.save(buffered, format="JPEG", quality=85, optimize=True)
             encoded_image = base64.b64encode(buffered.getvalue()).decode("utf-8")
             print(f"Image encoded successfully. Size: {len(encoded_image)} bytes")
             return encoded_image
@@ -64,6 +67,14 @@ def create_chat_completion(query, encoded_image, model):
     
     messages = [
         {
+            "role": "system",
+            "content": (
+                "Answer concisely in plain text while preserving Markdown exactly. "
+                "Keep headings beginning with #, bold markers **, bullet markers -, "
+                "numbering, emojis, and other symbols in your response."
+            ),
+        },
+        {
             "role": "user",
             "content": [
                 {
@@ -83,9 +94,17 @@ def create_chat_completion(query, encoded_image, model):
     try:
         chat_completions = client.chat.completions.create(
             messages=messages,
-            model=model
+            model=model,
+            temperature=0.6,
+            max_completion_tokens=768,
+            top_p=0.9,
+            reasoning_effort="low",
+            stream=True,
         )
-        return chat_completions.choices[0].message.content
+        return "".join(
+            chunk.choices[0].delta.content or ""
+            for chunk in chat_completions
+        )
     except Exception as e:
         error_msg = str(e)
         print(f"API Error: {error_msg}")
@@ -107,8 +126,12 @@ def process_input(audio_input, image_input):
             encoded_image = encode_image_to_base64(image_input)
             
             if encoded_image:
-                query = "What skin condition does this patient have? Please analyze the image carefully and provide detailed medical insights, including possible diagnoses and recommendations."
-                model = "meta-llama/llama-4-scout-17b-16e-instruct"
+                query = (
+                    "Analyze this skin image. Provide a concise response with: "
+                    "# Possible condition, # Observations, # Recommended next steps, "
+                    "and a brief safety disclaimer. Do not remove Markdown symbols."
+                )
+                model = GROQ_MODEL
                 print("Sending to Groq API for analysis...")
                 doctor_response = create_chat_completion(query, encoded_image, model)
                 print(f"Doctor response received: {doctor_response[:100]}...")
@@ -123,8 +146,13 @@ def process_input(audio_input, image_input):
         # Generate voice response
         if doctor_response and doctor_response != "Welcome to AI Medical Vision Chatbot!":
             try:
-                texttospeech_gtts(doctor_response, output_file="doctor_response.mp3")
                 audio_output_path = "doctor_response.mp3"
+                elevenlabs_success = texttospeech_elevenlabs(
+                    doctor_response,
+                    output_file=audio_output_path,
+                )
+                if not elevenlabs_success:
+                    texttospeech_gtts(doctor_response, output_file=audio_output_path)
                 print("Voice response generated successfully")
             except Exception as e:
                 print(f"TTS Error: {e}")
@@ -156,9 +184,6 @@ if __name__ == "__main__":
     print("🏥 AI Medical Vision Chatbot is starting...")
     print("="*60)
     iface.launch(debug=False, share=True)
-
-
-
 
 
 

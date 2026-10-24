@@ -1,12 +1,40 @@
+# Environment variables and local secrets
 .env
+.env.*
+!.env.example
+
+# Virtual environments
+.venv/
+.venv312/
+venv/
+env/
+*.venv/
+
+# Python cache and build output
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+target/
+*.egg-info/
+
+# Generated audio files
 *.mp3
 *.wav
-__pycache__/
-*.pyc
-*.venv
-*.env
-*.venv-1
-*.requirements.txt
-*.gradio
-*.vscode
 
+# Local IDE and tool settings
+.vscode/
+.idea/
+.gradio/
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Local logs and temporary files
+*.log
+*.tmp
+*.temp
