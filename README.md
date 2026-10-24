@@ -1,24 +1,133 @@
-# AI Doctor with Vision and Voice
+<div align="center">
 
-AI Doctor is a multimodal healthcare-assistance project that accepts patient text,
-voice recordings, images, and (in the web stack) PDF reports. It uses Groq for
-speech transcription and AI analysis, and ElevenLabs or gTTS for voice output.
+# 🩺 AI Doctor — Vision & Voice
 
-> **Medical disclaimer:** This project is for educational purposes only. It does
-> not provide a medical diagnosis and is not a substitute for a qualified
-> healthcare professional. Seek professional or emergency care when appropriate.
+### A multimodal healthcare-assistance project for text, voice, images, and medical reports.
 
-## Features
+[![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB?logo=react&logoColor=20232A)](https://react.dev/)
+[![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Groq](https://img.shields.io/badge/AI-Groq-F55036)](https://groq.com/)
 
-- Image analysis with a vision-capable Groq model
-- Voice transcription using Groq Whisper
-- Text and audio responses
-- ElevenLabs voice generation with gTTS fallback in the Gradio app
-- React web interface with patient and consultation history
-- Spring Boot history service backed by PostgreSQL
-- PDF report text extraction in the web AI service
+*Describe symptoms, share a supported image or report, or speak naturally—then receive an informational AI-generated response with optional audio output.*
 
-## Project structure
+**Educational project only · Not a medical device · Not a substitute for professional care**
+
+</div>
+
+---
+
+## ✨ At a glance
+
+| 🧠 Multimodal analysis | 🎙️ Voice input & output | 🗂️ Consultation history |
+|:---:|:---:|:---:|
+| Text, supported images, and PDF report text | Groq Whisper transcription, with ElevenLabs or gTTS speech output in the Gradio app | React interface backed by a Spring Boot service and PostgreSQL |
+
+## 🧭 Quick navigation
+
+- [Features](#-features)
+- [How it works](#-how-it-works)
+- [Architecture](#-architecture)
+- [Project structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Configuration](#-configuration)
+- [Run locally](#-run-locally)
+- [API reference](#-api-reference)
+- [Troubleshooting](#-troubleshooting)
+- [Safety and disclaimer](#-safety-and-disclaimer)
+- [Contributing](#-contributing)
+- [Authors](#-authors)
+
+---
+
+## 🚀 Features
+
+- 🖼️ **Image analysis** using a vision-capable Groq model.
+- 🎤 **Voice transcription** using Groq Whisper.
+- 💬 **Text-based responses** for symptoms and questions.
+- 🔊 **Generated audio responses** through ElevenLabs, with gTTS fallback in the Gradio application.
+- 📄 **PDF report text extraction** in the web AI service.
+- 🧑‍⚕️ **Patient and consultation history** in the React web interface.
+- ☕ **Spring Boot history service** backed by PostgreSQL.
+- ⚡ **FastAPI AI service** for analysis and speech-generation endpoints.
+- 🧪 **Two ways to run the project:** a standalone Gradio application or the multi-service web stack.
+
+> **Scope note:** The Gradio app and web stack have different capabilities. PDF extraction and the React-based history experience belong to the web stack; do not assume every feature is available in the Gradio app.
+
+## 🧩 How it works
+
+```mermaid
+flowchart TD
+    U([User]) --> I{Choose input}
+    I --> T[Text / symptoms]
+    I --> V[Image]
+    I --> A[Voice recording]
+    I --> P[PDF report · web stack]
+
+    T --> AI[AI service / analysis]
+    V --> AI
+    P --> X[Extract report text]
+    X --> AI
+    A --> STT[Groq Whisper transcription]
+    STT --> AI
+
+    AI --> R[Informational response]
+    R --> O{Need audio?}
+    O -->|Yes| S[Speech generation]
+    O -->|No| TXT[Display text]
+    S --> TXT
+    S --> AUD([Audio response])
+```
+
+## 🏗️ Architecture
+
+The repository contains a legacy Gradio experience and a separate web application made up of a React client, a FastAPI AI service, and a Spring Boot history service.
+
+```mermaid
+flowchart LR
+    subgraph Client[User interfaces]
+        G[Gradio app]
+        W[React + Vite web client]
+    end
+
+    subgraph AI[Python AI layer]
+        F[FastAPI · port 8000]
+        Q[Groq · analysis and transcription]
+        V[Voice generation]
+        PDF[PDF text extraction]
+    end
+
+    subgraph History[History layer]
+        S[Spring Boot · port 8080]
+        DB[(PostgreSQL)]
+    end
+
+    G --> Q
+    G --> V
+    W --> F
+    F --> Q
+    F --> V
+    F --> PDF
+    W --> S
+    S --> DB
+```
+
+### Technology stack
+
+| Layer | Technologies |
+|---|---|
+| Legacy interface | Gradio, Python |
+| Web frontend | React, Vite |
+| AI API | FastAPI, Groq |
+| Speech input | Groq Whisper |
+| Speech output | ElevenLabs; gTTS fallback in Gradio |
+| History API | Java 17, Spring Boot, Maven |
+| Database | PostgreSQL |
+| Local database runtime | Docker Compose |
+
+## 📁 Project structure
 
 ```text
 AI-DOCTOR/
@@ -26,63 +135,70 @@ AI-DOCTOR/
 ├── brainofdoctor.py             # Standalone image-analysis example
 ├── voiceofdoctor.py             # ElevenLabs and gTTS helpers
 ├── voiceofpatient.py            # Standalone microphone/transcription example
-├── requirements.txt             # Dependencies for the Gradio application
+├── requirements.txt             # Gradio application dependencies
 ├── ai-service/
 │   ├── main.py                  # FastAPI analysis and voice API
-│   └── requirements.txt
+│   └── requirements.txt         # AI service dependencies
 ├── history-service/
-│   ├── pom.xml                  # Spring Boot service
-│   └── src/
+│   ├── pom.xml                  # Spring Boot / Maven configuration
+│   └── src/                     # History service source code
 ├── frontend/                    # React + Vite web client
-├── docker-compose.yml            # PostgreSQL development database
+├── docker-compose.yml           # PostgreSQL development database
 └── README_WEB_STACK.md          # Additional web-stack notes
 ```
 
-Generated files such as Python caches, `node_modules`, frontend builds, Maven
-`target` output, and local environment files are intentionally ignored by Git.
+Generated files such as Python caches, `node_modules`, frontend builds, Maven `target` output, and local environment files should stay out of version control.
 
-## Prerequisites
+## ✅ Prerequisites
 
-### Gradio application
+Install the tools for the app you intend to run.
 
-- Python 3.11 or newer
-- A Groq API key
-- An ElevenLabs API key and voice ID if ElevenLabs output is required
-- FFmpeg and PortAudio may be required by the audio dependencies
+| Tool | Gradio app | Web stack |
+|---|:---:|:---:|
+| Python 3.11+ | ✅ | ✅ |
+| Groq API key | ✅ | ✅ |
+| ElevenLabs API key + voice ID | Optional | Optional, depending on implementation |
+| FFmpeg / PortAudio | May be required by audio dependencies | May be required by audio dependencies |
+| Node.js + npm | — | ✅ |
+| Java 17 + Maven | — | ✅ |
+| Docker Desktop | — | ✅ (for included PostgreSQL container) |
 
-### Web stack
+## 🔐 Configuration
 
-- Python 3.11 or newer
-- Node.js and npm
-- Java 17
-- Maven
-- Docker Desktop, for the included PostgreSQL container
+### 1. Add your API keys
 
-## Configuration
-
-Create a `.env` file in the repository root. Do not commit it.
+Create a `.env` file in the repository root. Keep it private and **never commit it**.
 
 ```env
 GROQ_API_KEY=your_groq_api_key
 GROQ_MODEL=qwen/qwen3.8-27b
+
+# Optional: used when ElevenLabs speech output is enabled
 ELEVENLABS_API_KEY=your_elevenlabs_api_key
 ELEVENLABS_VOICE_ID=your_elevenlabs_voice_id
 ```
 
-The frontend uses these local development defaults:
+Use the model identifier supported by the Groq account and API configuration you are running. Do not paste real API keys into source code, screenshots, issues, or commits.
+
+### 2. Configure the frontend URLs
+
+The frontend development defaults are:
 
 ```env
 VITE_HISTORY_API_URL=http://localhost:8080/api
 VITE_AI_API_URL=http://localhost:8000
 ```
 
-If you need different URLs, create `frontend/.env.local` with those variables.
-The committed [frontend/.env.example](frontend/.env.example) shows the variable
-names without exposing credentials.
+To override them, create `frontend/.env.local` and add the variables above. Vite-exposed variables are included in the browser bundle, so **never put secrets or private API keys in `VITE_*` variables**. The repository's `frontend/.env.example` documents the variable names.
 
-## Run the Gradio application
+## 💻 Run locally
 
-Create and activate a virtual environment, then install the dependencies:
+Choose **one** of the following paths, or start all services for the web stack.
+
+<details>
+<summary><strong>Option A — Run the Gradio application</strong></summary>
+
+From the repository root, open PowerShell:
 
 ```powershell
 python -m venv .venv
@@ -90,28 +206,32 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-Start the application:
+Add your Groq key to the root `.env`, then launch:
 
 ```powershell
 python gradioapp.py
 ```
 
-Gradio prints the local URL in the terminal, normally
-`http://127.0.0.1:7860`. The application accepts a voice recording and an image
-of a skin condition, then returns text, transcription output, and generated
-audio.
+Open the local URL printed in the terminal, normally [`http://127.0.0.1:7860`](http://127.0.0.1:7860).
 
-## Run the web stack
+The Gradio interface accepts a voice recording and an image of a skin condition, then returns text/transcription output and generated audio, depending on the configured services.
 
-Start PostgreSQL:
+</details>
+
+<details>
+<summary><strong>Option B — Run the complete web stack</strong></summary>
+
+### Step 1 — Start PostgreSQL
+
+Make sure Docker Desktop is installed and running, then execute this from the repository root:
 
 ```powershell
 docker compose up -d postgres
 ```
 
-### Start the AI service
+### Step 2 — Start the FastAPI AI service
 
-From the repository root, install the service dependencies and start FastAPI:
+Open a terminal at the repository root. Activate your virtual environment and install the AI service dependencies:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1
@@ -119,23 +239,26 @@ pip install -r ai-service\requirements.txt
 uvicorn main:app --app-dir ai-service --reload --port 8000
 ```
 
-The AI service is available at `http://localhost:8000`. Its health endpoint is
-`http://localhost:8000/health`.
+- API base: [`http://localhost:8000`](http://localhost:8000)
+- Health check: [`http://localhost:8000/health`](http://localhost:8000/health)
+- Interactive API docs, if enabled by FastAPI: [`http://localhost:8000/docs`](http://localhost:8000/docs)
 
-### Start the history service
+Keep this terminal running.
 
-In a second terminal:
+### Step 3 — Start the Spring Boot history service
+
+In a **second terminal**:
 
 ```powershell
 cd history-service
 mvn spring-boot:run
 ```
 
-The history service is available at `http://localhost:8080`.
+The history service runs at [`http://localhost:8080`](http://localhost:8080), assuming the application configuration uses the default port.
 
-### Start the frontend
+### Step 4 — Start the React frontend
 
-In a third terminal:
+In a **third terminal**:
 
 ```powershell
 cd frontend
@@ -143,42 +266,107 @@ npm install
 npm run dev
 ```
 
-Open the URL printed by Vite, normally `http://localhost:5173`.
+Open the URL printed by Vite, normally [`http://localhost:5173`](http://localhost:5173).
 
-To create a production frontend build:
+To build the frontend for production:
 
 ```powershell
 npm run build
 ```
 
-## API endpoints
+</details>
 
-The AI service currently exposes:
+## 🔌 API reference
+
+### AI service — FastAPI (`localhost:8000`)
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| GET | `/health` | Service health check |
-| POST | `/api/analyze` | Analyze symptoms, images, PDF reports, and audio |
-| POST | `/api/speak` | Generate MP3 speech from analysis text |
+| `GET` | `/health` | Check whether the AI service is responding |
+| `POST` | `/api/analyze` | Analyze submitted symptoms, supported images, PDF reports, and/or audio |
+| `POST` | `/api/speak` | Generate MP3 speech from analysis text |
 
-The history service exposes patient and consultation endpoints under
-`/api/patients` and `/api/consultations`.
+### History service — Spring Boot (`localhost:8080`)
 
-## Development notes
+The history service exposes patient and consultation endpoints under:
 
-- Keep API keys in the root `.env` file.
-- Do not commit generated audio, build output, dependency directories, or
-  compiled Java classes.
-- AI responses are informational and should be reviewed by a healthcare
-  professional.
+- `/api/patients`
+- `/api/consultations`
 
-## Contributing
+Request schemas and response formats depend on the implementation in the service source code.
+
+## 🛠️ Troubleshooting
+
+<details>
+<summary><strong>PowerShell says script execution is disabled</strong></summary>
+
+If activation of `.venv` is blocked by your PowerShell execution policy, use a permitted activation method for your machine or run the environment's Python executable directly. Avoid changing system-wide security settings unless you understand the implications.
+
+</details>
+
+<details>
+<summary><strong>The AI service cannot find the API key</strong></summary>
+
+Confirm that the root `.env` exists and contains `GROQ_API_KEY`. Environment files are not automatically loaded by every Python process; verify how the application loads configuration and follow its expected startup directory. Restart the service after changing environment variables.
+
+</details>
+
+<details>
+<summary><strong>The frontend cannot reach an API</strong></summary>
+
+Check that the AI and history services are running, confirm the URLs in `frontend/.env.local`, and review the browser console and backend terminal for CORS or connection errors. Restart Vite after changing its environment file.
+
+</details>
+
+<details>
+<summary><strong>PostgreSQL or Docker fails to start</strong></summary>
+
+Check that Docker Desktop is running, then inspect the container state and logs:
+
+```powershell
+docker compose ps
+docker compose logs postgres
+```
+
+Check the database settings expected by the Spring Boot application against the values configured in `docker-compose.yml`.
+
+</details>
+
+<details>
+<summary><strong>Microphone, audio, or transcription errors</strong></summary>
+
+Check operating-system microphone permissions and confirm that the audio dependencies required by your environment are installed. FFmpeg and PortAudio may be needed for some audio workflows. Review the terminal output for the specific missing package or device error.
+
+</details>
+
+## 🛡️ Safety and disclaimer
+
+AI Doctor is an **educational healthcare-assistance project**. It may make mistakes, omit important context, or produce misleading output. It is not validated for clinical use and must not be used to diagnose conditions, choose treatment, or delay care.
+
+- Do not rely on this project for medical emergencies or time-critical decisions.
+- Seek a qualified healthcare professional for medical advice, diagnosis, and treatment.
+- If symptoms may indicate an emergency, contact local emergency services immediately.
+- Avoid uploading identifiable patient information unless you have appropriate permission and have evaluated the privacy and security implications.
+
+## 🤝 Contributing
+
+Contributions, bug reports, and thoughtful suggestions are welcome.
 
 1. Fork the repository.
-2. Create a feature branch.
-3. Make and test your changes.
-4. Open a pull request with a clear description.
+2. Create a focused feature branch.
+3. Make your changes and test them locally.
+4. Open a pull request with a clear description of the change and any relevant testing notes.
 
-## Author
+Please do not include secrets, real patient data, generated audio, dependency folders, or build output in commits.
 
-Kush Sahu
+## 👥 Authors
+
+**Kush Sahu** · **Arshika Thakkar**
+
+---
+
+<div align="center">
+
+**Built for learning and experimentation. Designed to assist—not replace—professional medical care.**
+
+</div>
