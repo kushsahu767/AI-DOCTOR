@@ -1,234 +1,184 @@
-# 🩺 AI Doctor with Vision & Voice
+# AI Doctor with Vision and Voice
 
-### 🚀 Multimodal AI Healthcare Assistant (Voice + Vision + LLM)
+AI Doctor is a multimodal healthcare-assistance project that accepts patient text,
+voice recordings, images, and (in the web stack) PDF reports. It uses Groq for
+speech transcription and AI analysis, and ElevenLabs or gTTS for voice output.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/AI-Multimodal-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Python-3.10+-yellow?style=for-the-badge&logo=python" />
-  <img src="https://img.shields.io/badge/Gradio-UI-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Whisper-STT-green?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/TTS-gTTS%20%7C%20ElevenLabs-red?style=for-the-badge" />
-</p>
+> **Medical disclaimer:** This project is for educational purposes only. It does
+> not provide a medical diagnosis and is not a substitute for a qualified
+> healthcare professional. Seek professional or emergency care when appropriate.
 
----
+## Features
 
-## 🌟 Project Overview
+- Image analysis with a vision-capable Groq model
+- Voice transcription using Groq Whisper
+- Text and audio responses
+- ElevenLabs voice generation with gTTS fallback in the Gradio app
+- React web interface with patient and consultation history
+- Spring Boot history service backed by PostgreSQL
+- PDF report text extraction in the web AI service
 
-AI Doctor with Vision & Voice is a next-generation AI-powered healthcare assistant that simulates basic medical consultation using both voice input and image analysis. The system combines speech recognition, computer vision, and large language models to provide a human-like interaction experience.
+## Project structure
 
-Users can describe their symptoms through voice and upload an image of the affected area. The system processes both inputs and generates a response in text as well as audio format.
-
----
-
-## 🎯 Problem Statement
-
-Access to healthcare is often delayed, expensive, or unavailable in remote areas. Most digital solutions lack multimodal capability and fail to understand real-world user conditions effectively.
-
-This project solves these problems by providing:
-
-* Instant AI-based response
-* Low-cost solution
-* Easy accessibility
-* Multimodal understanding (Voice + Image)
-
----
-
-## 🧠 System Workflow
-
-
-flowchart TD
-    A[User Voice Input 🎤] --> B[Speech-to-Text (Whisper)]
-    C[User Image 🖼️] --> D[Vision Model]
-    B --> E[Multimodal LLM]
-    D --> E
-    E --> F[AI Response]
-    F --> G[Text Output]
-    F --> H[Text-to-Speech 🔊]
-```
-
----
-
-## ✨ Features
-
-* 🎙️ Real-time Voice Input
-* 🧠 Speech-to-Text using Whisper
-* 🖼️ Image Upload & Analysis
-* 🤖 AI-generated medical suggestions
-* 🔊 Voice Output using TTS
-* 🌐 Interactive UI using Gradio
-* ⚡ Fast inference using Groq
-
----
-
-## 🏗️ Architecture
-
-The system follows a modular layered architecture. The input layer handles user voice and image data, which is processed using speech recognition and computer vision models. The processed data is then sent to a multimodal large language model, which generates a response. Finally, the output layer converts the response into both text and speech.
-
----
-
-## 🛠️ Tech Stack
-
-### 👨‍💻 Programming Language
-
-* Python
-
-### 🧠 AI Models
-
-* Whisper (Speech-to-Text)
-* LLaMA Vision Model
-* Groq API (LLM inference)
-
-### 🔊 Audio
-
-* gTTS
-* ElevenLabs
-
-### 🌐 Frameworks & Tools
-
-* Gradio
-* VS Code
-* Git & GitHub
-
----
-
-## 📂 Project Structure
-
-```bash
+```text
 AI-DOCTOR/
-│
-├── app.py / grad.py            # Main app
-├── brain_of_doctor.py          # AI logic
-├── voice_of_patient.py         # Speech-to-text
-├── voice_of_doctor.py          # Text-to-speech
-├── requirements.txt
-├── .env
-└── README.md
+├── gradioapp.py                 # Legacy Gradio application
+├── brainofdoctor.py             # Standalone image-analysis example
+├── voiceofdoctor.py             # ElevenLabs and gTTS helpers
+├── voiceofpatient.py            # Standalone microphone/transcription example
+├── requirements.txt             # Dependencies for the Gradio application
+├── ai-service/
+│   ├── main.py                  # FastAPI analysis and voice API
+│   └── requirements.txt
+├── history-service/
+│   ├── pom.xml                  # Spring Boot service
+│   └── src/
+├── frontend/                    # React + Vite web client
+├── docker-compose.yml            # PostgreSQL development database
+└── README_WEB_STACK.md          # Additional web-stack notes
 ```
 
----
+Generated files such as Python caches, `node_modules`, frontend builds, Maven
+`target` output, and local environment files are intentionally ignored by Git.
 
-## ⚙️ Installation
+## Prerequisites
 
-### 1️⃣ Clone Repository
+### Gradio application
 
-```bash
-git clone https://github.com/kushsahu767/AI-DOCTOR.git
-cd AI-DOCTOR
+- Python 3.11 or newer
+- A Groq API key
+- An ElevenLabs API key and voice ID if ElevenLabs output is required
+- FFmpeg and PortAudio may be required by the audio dependencies
+
+### Web stack
+
+- Python 3.11 or newer
+- Node.js and npm
+- Java 17
+- Maven
+- Docker Desktop, for the included PostgreSQL container
+
+## Configuration
+
+Create a `.env` file in the repository root. Do not commit it.
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GROQ_MODEL=qwen/qwen3.8-27b
+ELEVENLABS_API_KEY=your_elevenlabs_api_key
+ELEVENLABS_VOICE_ID=your_elevenlabs_voice_id
 ```
 
-### 2️⃣ Create Virtual Environment
+The frontend uses these local development defaults:
 
-```bash
-python -m venv venv
-venv\Scripts\activate
+```env
+VITE_HISTORY_API_URL=http://localhost:8080/api
+VITE_AI_API_URL=http://localhost:8000
 ```
 
-### 3️⃣ Install Dependencies
+If you need different URLs, create `frontend/.env.local` with those variables.
+The committed [frontend/.env.example](frontend/.env.example) shows the variable
+names without exposing credentials.
 
-```bash
+## Run the Gradio application
+
+Create and activate a virtual environment, then install the dependencies:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Setup Environment Variables
+Start the application:
 
-Create `.env` file:
-
-```env
-GROQ_API_KEY=your_api_key_here
-ELEVENLABS_API_KEY=your_api_key_here
+```powershell
+python gradioapp.py
 ```
 
----
+Gradio prints the local URL in the terminal, normally
+`http://127.0.0.1:7860`. The application accepts a voice recording and an image
+of a skin condition, then returns text, transcription output, and generated
+audio.
 
-## ▶️ Run the Project
+## Run the web stack
 
-```bash
-python grad.py
+Start PostgreSQL:
+
+```powershell
+docker compose up -d postgres
 ```
 
-Open in browser:
+### Start the AI service
 
+From the repository root, install the service dependencies and start FastAPI:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r ai-service\requirements.txt
+uvicorn main:app --app-dir ai-service --reload --port 8000
 ```
-http://127.0.0.1:7860
+
+The AI service is available at `http://localhost:8000`. Its health endpoint is
+`http://localhost:8000/health`.
+
+### Start the history service
+
+In a second terminal:
+
+```powershell
+cd history-service
+mvn spring-boot:run
 ```
 
----
+The history service is available at `http://localhost:8080`.
 
+### Start the frontend
 
+In a third terminal:
 
-## 📸 Usage
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-1. Record your voice describing symptoms
-2. Upload an image (optional)
-3. Submit input
-4. View:
+Open the URL printed by Vite, normally `http://localhost:5173`.
 
-   * Transcribed text
-   * AI-generated response
-   * Audio output
+To create a production frontend build:
 
----
+```powershell
+npm run build
+```
 
-## 📊 Results
+## API endpoints
 
-The system successfully processes multimodal inputs and generates meaningful responses. It provides both text and voice output, making it highly interactive and user-friendly. The response time is fast, and the results are context-aware for basic healthcare assistance.
+The AI service currently exposes:
 
----
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/health` | Service health check |
+| POST | `/api/analyze` | Analyze symptoms, images, PDF reports, and audio |
+| POST | `/api/speak` | Generate MP3 speech from analysis text |
 
-## ⚠️ Limitations
+The history service exposes patient and consultation endpoints under
+`/api/patients` and `/api/consultations`.
 
-* Not a replacement for professional doctors
-* Depends on input quality
-* Requires internet connection
+## Development notes
 
----
+- Keep API keys in the root `.env` file.
+- Do not commit generated audio, build output, dependency directories, or
+  compiled Java classes.
+- AI responses are informational and should be reviewed by a healthcare
+  professional.
 
-## 🚀 Future Scope
+## Contributing
 
-* Mobile application development
-* Multi-language support
-* Advanced disease detection
-* Offline functionality
-* Integration with wearable devices
+1. Fork the repository.
+2. Create a feature branch.
+3. Make and test your changes.
+4. Open a pull request with a clear description.
 
----
-
-## ⚠️ Disclaimer
-
-This project is for educational purposes only.
-It does not provide real medical diagnosis. Always consult a certified doctor.
-
----
-
-## 👨‍💻 Author
+## Author
 
 Kush Sahu
-UI/UX Designer | AI Developer
-
----
-
-## 🏗️ Development Note
-
-This project is independently designed and developed by me, including the system architecture, UI/UX design, and integration of all modules such as voice processing, image analysis, and response generation.
-
-AI technologies like Whisper, LLMs, and Text-to-Speech have been used strictly as functional tools for processing and debugging purposes. The complete logic, design, and implementation of this system are developed by me.
-
----
-
-## 🤝 Contributing
-
-* Fork the repository
-* Create a new branch
-* Submit a pull request
-
----
-
-## ⭐ Support
-
-If you like this project:
-
-* ⭐ Star the repository
-* 🍴 Fork it
-* 📢 Share it
-
----
